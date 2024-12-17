@@ -51,6 +51,12 @@ public struct CXDateComponentYear: CXDateComponent {
 
 /// A struct representing a month component in a date.
 public struct CXDateComponentMonth: CXDateComponent {
+    // MARK: - Enums
+
+    public enum MonthStyle {
+        case short, long
+    }
+
     /// The numeric value of the month (1-12).
     public let value: Int
 
@@ -58,12 +64,17 @@ public struct CXDateComponentMonth: CXDateComponent {
     public var isValid: Bool { (1 ... 12).contains(value) }
 
     /// A string representation of the month value.
-    public var description: String { String(value) }
+    public var description: String { monthSymbol }
+
+    // MARK: - Private properties
+
+    private let monthSymbol: String
 
     /// Creates a month component with the specified value.
     /// - Parameter value: The numeric value of the month (1-12).
-    public init(_ value: Int) {
+    public init(_ value: Int, calendar: Calendar = .current, monthStyle: MonthStyle = .short) {
         self.value = value
+        monthSymbol = CXDateComponentMonth.fetchMonthSymbol(value, calendar: calendar, monthStyle: monthStyle)
     }
 
     /// An empty month component with value 0.
@@ -73,6 +84,13 @@ public struct CXDateComponentMonth: CXDateComponent {
 
     public static func < (lhs: CXDateComponentMonth, rhs: CXDateComponentMonth) -> Bool {
         lhs.value < rhs.value
+    }
+
+    // MARK: - Private methods
+
+    private static func fetchMonthSymbol(_ value: Int, calendar: Calendar = .current, monthStyle: MonthStyle = .short) -> String {
+        let monthSymbols = monthStyle == .short ? calendar.shortMonthSymbols : calendar.monthSymbols
+        return monthSymbols[safe: value - 1] ?? ""
     }
 }
 
@@ -103,3 +121,25 @@ public struct CXDateComponentDay: CXDateComponent {
         lhs.value < rhs.value
     }
 }
+
+// MARK: - Extensions
+
+public extension CXDateComponent where Self == CXDateComponentYear {
+    static func year(_ value: Int) -> CXDateComponentYear {
+        CXDateComponentYear(value)
+    }
+}
+
+public extension CXDateComponent where Self == CXDateComponentMonth {
+    static func month(_ value: Int, calendar _: Calendar = .current, formatter _: DateFormatter? = nil) -> CXDateComponentMonth {
+        CXDateComponentMonth(value)
+    }
+}
+
+public extension CXDateComponent where Self == CXDateComponentDay {
+    static func day(_ value: Int) -> CXDateComponentDay {
+        CXDateComponentDay(value)
+    }
+}
+
+/// Creates a date component with the specified value.

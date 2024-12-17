@@ -25,16 +25,41 @@ public struct CXDate: CXDateComponent {
     public var day: CXDateComponentDay
 
     /// The underlying Foundation Date value.
-    public var value: Date
+    public var value: Date {
+        var components = DateComponents()
+        if year.isValid {
+            components.year = year.value
+        }
+        if month.isValid {
+            components.month = month.value
+        }
+        if day.isValid {
+            components.day = day.value
+        }
+        return calendar.date(from: components) ?? .now
+    }
+
+    /// The formatted string representation of the date.
+    public var formattedValue: String {
+        formatter.string(from: value)
+    }
 
     /// Returns `true` if any of the components (year, month, day) are valid.
     public var isValid: Bool {
-        year.isValid || month.isValid || day.isValid
+        year.isValid || (year.isValid && month.isValid) || (year.isValid && month.isValid && day.isValid)
     }
 
     /// A string representation of the date in "yyyy-MM-dd" format.
     public var description: String {
-        formatter.string(from: value)
+        if year.isValid && month.isValid && day.isValid {
+            return year.description + "-" + month.description + "-" + day.description
+        } else if year.isValid && month.isValid {
+            return year.description + "-" + month.description
+        } else if year.isValid {
+            return year.description
+        } else {
+            return .placeholder
+        }
     }
 
     // MARK: - Private properties
@@ -42,7 +67,18 @@ public struct CXDate: CXDateComponent {
     /// The date formatter used for string conversion.
     private let formatter: DateFormatter
 
+    /// The calendar used for date calculations.
+    private let calendar: Calendar
+
     // MARK: - Initializers
+
+    public init(formatter: DateFormatter? = nil) {
+        year = .empty
+        month = .empty
+        day = .empty
+        calendar = .current
+        self.formatter = formatter ?? CXDate.defaultFormatter()
+    }
 
     /// Creates a date from a Foundation Date object.
     /// - Parameters:
@@ -54,7 +90,7 @@ public struct CXDate: CXDateComponent {
         year = components.year.map { .init($0) } ?? .empty
         month = components.month.map { .init($0) } ?? .empty
         day = components.day.map { .init($0) } ?? .empty
-        value = calendar.date(from: DateComponents(year: year.value, month: month.value, day: day.value)) ?? .now
+        self.calendar = calendar
         self.formatter = formatter ?? CXDate.defaultFormatter()
     }
 
@@ -83,5 +119,14 @@ public struct CXDate: CXDateComponent {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter
+    }
+}
+
+// MARK: - Extensions
+
+public extension CXDate {
+    /// A constant representing the current date.
+    static var now: CXDate {
+        CXDate(.now)
     }
 }
