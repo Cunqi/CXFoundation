@@ -1,2 +1,2 @@
 # CXFoundation
-Personal tool collections related to Foundation
+Personal tool collections related to iOS Foundation
