@@ -117,6 +117,16 @@ public struct CXDate: CXDateComponent {
         return lhs.day < rhs.day
     }
 
+    // MARK: - Public methods
+
+    public func updatedValidComponents(with date: CXDate) -> CXDate {
+        var newDate = CXDate()
+        newDate.year = year.isValid ? date.year : year
+        newDate.month = month.isValid ? date.month : month
+        newDate.day = day.isValid ? date.day : day
+        return newDate
+    }
+
     // MARK: - Private methods
 
     /// Creates a default date formatter with "yyyy-MM-dd" format.

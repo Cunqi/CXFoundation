@@ -51,6 +51,12 @@ public struct CXDateComponentYear: CXDateComponent {
         lhs.value < rhs.value
     }
 
+    // MARK: - Equatable
+
+    public static func == (lhs: CXDateComponentYear, rhs: CXDateComponentYear) -> Bool {
+        lhs.value == rhs.value
+    }
+
     // MARK: - Public methods
 
     /// Creates an array of year components for the specified range.
@@ -101,6 +107,12 @@ public struct CXDateComponentMonth: CXDateComponent {
         lhs.value < rhs.value
     }
 
+    // MARK: - Equatable
+
+    public static func == (lhs: CXDateComponentMonth, rhs: CXDateComponentMonth) -> Bool {
+        lhs.value == rhs.value
+    }
+
     // MARK: - Public methods
 
     public static func makeMonths(calendar: Calendar = .current, monthStyle: MonthStyle = .short) -> [CXDateComponentMonth] {
@@ -143,6 +155,12 @@ public struct CXDateComponentDay: CXDateComponent {
 
     public static func < (lhs: CXDateComponentDay, rhs: CXDateComponentDay) -> Bool {
         lhs.value < rhs.value
+    }
+
+    // MARK: - Equatable
+
+    public static func == (lhs: CXDateComponentDay, rhs: CXDateComponentDay) -> Bool {
+        lhs.value == rhs.value
     }
 
     // MARK: - Public methods
