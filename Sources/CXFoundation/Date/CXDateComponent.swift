@@ -147,6 +147,19 @@ public struct CXDateComponentDay: CXDateComponent {
         }
         return range.map { .init($0) }
     }
+
+    /// Creates an array of day components for the specified month and year.
+    /// - Parameters:
+    ///  - calendar: The calendar to use for date calculations.
+    ///  - date: The date to create day components for.
+    ///  - Returns: num of empty days at start of month
+    public static func makeEmptyDaysAtStart(calendar: Calendar = Calendar.current, date: Date) -> Int {
+        let components = calendar.dateComponents([.year, .month], from: date)
+        guard let firstDayOfMonth = calendar.date(from: components) else {
+            return 0
+        }
+        return calendar.component(.weekday, from: firstDayOfMonth) - 1
+    }
 }
 
 // MARK: - Extensions
