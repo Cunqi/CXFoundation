@@ -104,7 +104,7 @@ public struct CXDateComponentMonth: CXDateComponent {
     // MARK: - Public methods
 
     public static func makeMonths(calendar: Calendar = .current, monthStyle: MonthStyle = .short) -> [CXDateComponentMonth] {
-        calendar.monthSymbols.indices.map { .init($0, calendar: calendar, monthStyle: monthStyle) }
+        calendar.monthSymbols.indices.map { .init($0 + 1, calendar: calendar, monthStyle: monthStyle) }
     }
 
     // MARK: - Private methods

@@ -134,4 +134,8 @@ public extension CXDate {
     static var now: CXDate {
         CXDate(.now)
     }
+
+    static var new: CXDate {
+        CXDate()
+    }
 }
