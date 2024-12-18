@@ -12,7 +12,7 @@ import Foundation
 /// This protocol defines common behavior for date-related components such as dates, years, months, and days.
 /// Each component must provide validation and support standard Swift protocols for comparison,
 /// string representation, and data handling.
-public protocol CXDateComponent: Comparable, CustomStringConvertible, Equatable, Sendable {
+public protocol CXDateComponent: Comparable, CustomStringConvertible, Equatable, Identifiable, Sendable {
     associatedtype Value
 
     /// The underlying value of the date component.
@@ -26,6 +26,9 @@ public protocol CXDateComponent: Comparable, CustomStringConvertible, Equatable,
 public struct CXDateComponentYear: CXDateComponent {
     /// The numeric value of the year.
     public let value: Int
+
+    /// The unique identifier of the year component.
+    public var id: Int { value }
 
     /// Returns `true` if the year value is positive.
     public var isValid: Bool { value > 0 }
@@ -68,6 +71,9 @@ public struct CXDateComponentMonth: CXDateComponent {
 
     /// The numeric value of the month (1-12).
     public let value: Int
+
+    /// The unique identifier of the year component.
+    public var id: Int { value }
 
     /// Returns `true` if the month value is between 1 and 12 inclusive.
     public var isValid: Bool { (1 ... 12).contains(value) }
@@ -113,6 +119,9 @@ public struct CXDateComponentMonth: CXDateComponent {
 public struct CXDateComponentDay: CXDateComponent {
     /// The numeric value of the day.
     public let value: Int
+
+    /// The unique identifier of the year component.
+    public var id: Int { value }
 
     /// Returns `true` if the day value is between 1 and 31 inclusive.
     /// Note: This is a basic validation and doesn't account for varying month lengths.
