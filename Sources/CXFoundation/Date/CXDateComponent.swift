@@ -47,6 +47,15 @@ public struct CXDateComponentYear: CXDateComponent {
     public static func < (lhs: CXDateComponentYear, rhs: CXDateComponentYear) -> Bool {
         lhs.value < rhs.value
     }
+
+    // MARK: - Public methods
+
+    /// Creates an array of year components for the specified range.
+    /// - Parameter years: The range of years to create components for.
+    /// - Returns: An array of year components for the specified range.
+    public static func makeYears(_ years: Range<Int>) -> [CXDateComponentYear] {
+        years.map { .init($0) }
+    }
 }
 
 /// A struct representing a month component in a date.
@@ -86,6 +95,12 @@ public struct CXDateComponentMonth: CXDateComponent {
         lhs.value < rhs.value
     }
 
+    // MARK: - Public methods
+
+    public static func makeMonths(calendar: Calendar = .current, monthStyle: MonthStyle = .short) -> [CXDateComponentMonth] {
+        calendar.monthSymbols.indices.map { .init($0, calendar: calendar, monthStyle: monthStyle) }
+    }
+
     // MARK: - Private methods
 
     private static func fetchMonthSymbol(_ value: Int, calendar: Calendar = .current, monthStyle: MonthStyle = .short) -> String {
@@ -119,6 +134,18 @@ public struct CXDateComponentDay: CXDateComponent {
 
     public static func < (lhs: CXDateComponentDay, rhs: CXDateComponentDay) -> Bool {
         lhs.value < rhs.value
+    }
+
+    // MARK: - Public methods
+
+    /// Creates an array of day components for the specified range.
+    /// - Parameter days: The range of days to create components for.
+    /// - Returns: An array of day components for the specified range.
+    public static func makeDays(calendar: Calendar = Calendar.current, date: Date) -> [CXDateComponentDay] {
+        guard let range = calendar.range(of: .day, in: .month, for: date) else {
+            return []
+        }
+        return range.map { .init($0) }
     }
 }
 
