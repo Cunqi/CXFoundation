@@ -39,6 +39,11 @@ public struct CXDate: CXDateComponent {
         return calendar.date(from: components) ?? .now
     }
 
+    /// The unique identifier of the date.
+    public var id: String {
+        description
+    }
+
     /// The formatted string representation of the date.
     public var formattedValue: String {
         formatter.string(from: value)
