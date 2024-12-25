@@ -13,16 +13,36 @@ import Foundation
 /// individual components (year, month, day) while maintaining the original `Date` value.
 /// It supports validation of the entire date as well as individual components.
 public struct CXDate: CXDateComponent {
+
+    // MARK: - Constants
+
+    public enum DateComponentType: CaseIterable {
+        case year
+        case month
+        case day
+    }
+
     // MARK: - Public properties
+
+    /// The calendar used for date calculations.
+    public let calendar: Calendar
 
     /// The year component of the date.
     public var year: CXDateComponentYear
 
     /// The month component of the date.
-    public var month: CXDateComponentMonth
+    public var month: CXDateComponentMonth {
+        didSet {
+            year = month.year
+        }
+    }
 
     /// The day component of the date.
-    public var day: CXDateComponentDay
+    public var day: CXDateComponentDay {
+        didSet {
+            month = day.month
+        }
+    }
 
     /// The underlying Foundation Date value.
     public var value: Date {
@@ -72,16 +92,13 @@ public struct CXDate: CXDateComponent {
     /// The date formatter used for string conversion.
     private let formatter: DateFormatter
 
-    /// The calendar used for date calculations.
-    private let calendar: Calendar
-
     // MARK: - Initializers
 
     public init(formatter: DateFormatter? = nil) {
-        year = .empty
-        month = .empty
-        day = .empty
-        calendar = .current
+        self.year = .empty
+        self.month = .empty
+        self.day = .empty
+        self.calendar = .current
         self.formatter = formatter ?? CXDate.defaultFormatter()
     }
 
@@ -91,10 +108,33 @@ public struct CXDate: CXDateComponent {
     ///   - calendar: The calendar to use for date calculations (defaults to current).
     ///   - formatter: Optional custom date formatter (defaults to "yyyy-MM-dd" format).
     public init(_ date: Date, calendar: Calendar = .current, formatter: DateFormatter? = nil) {
-        let components = calendar.dateComponents([.year, .month, .day], from: date)
-        year = components.year.map { .init($0) } ?? .empty
-        month = components.month.map { .init($0) } ?? .empty
-        day = components.day.map { .init($0) } ?? .empty
+        self.day = CXDateComponentDay(date, calendar: calendar)
+        self.month = day.month
+        self.year = day.month.year
+        self.calendar = calendar
+        self.formatter = formatter ?? CXDate.defaultFormatter()
+    }
+
+    public init(day: CXDateComponentDay, calendar: Calendar = .current, formatter: DateFormatter? = nil) {
+        self.day = day
+        self.month = day.month
+        self.year = day.month.year
+        self.calendar = calendar
+        self.formatter = formatter ?? CXDate.defaultFormatter()
+    }
+
+    public init(month: CXDateComponentMonth, calendar: Calendar = .current, formatter: DateFormatter? = nil) {
+        self.month = month
+        self.year = month.year
+        self.day = .empty
+        self.calendar = calendar
+        self.formatter = formatter ?? CXDate.defaultFormatter()
+    }
+
+    public init(year: CXDateComponentYear, calendar: Calendar = .current, formatter: DateFormatter? = nil) {
+        self.year = year
+        self.month = .empty
+        self.day = .empty
         self.calendar = calendar
         self.formatter = formatter ?? CXDate.defaultFormatter()
     }
@@ -118,6 +158,18 @@ public struct CXDate: CXDateComponent {
     }
 
     // MARK: - Public methods
+
+    public func date(calendar: Calendar) -> Date? {
+        if day.isValid {
+            return day.date(calendar: calendar)
+        } else if month.isValid {
+            return month.date(calendar: calendar)
+        } else if year.isValid {
+            return year.date(calendar: calendar)
+        } else {
+            return nil
+        }
+    }
 
     public func updatedValidComponents(with date: CXDate) -> CXDate {
         var newDate = CXDate()

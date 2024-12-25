@@ -20,6 +20,8 @@ public protocol CXDateComponent: Comparable, CustomStringConvertible, Equatable,
 
     /// Returns a Boolean value indicating whether the date component is valid.
     var isValid: Bool { get }
+
+    func date(calendar: Calendar) -> Date?
 }
 
 /// A struct representing a year component in a date.
@@ -28,18 +30,22 @@ public struct CXDateComponentYear: CXDateComponent {
     public let value: Int
 
     /// The unique identifier of the year component.
-    public var id: Int { value }
+    public var id: String { value.description }
 
     /// Returns `true` if the year value is positive.
     public var isValid: Bool { value > 0 }
 
     /// A string representation of the year value.
-    public var description: String { String(value) }
+    public var description: String { value.description }
 
     /// Creates a year component with the specified value.
     /// - Parameter value: The numeric value of the year.
     public init(_ value: Int) {
         self.value = value
+    }
+
+    public init(_ value: Date, calendar: Calendar = .current) {
+        self.value = calendar.component(.year, from: value)
     }
 
     /// An empty year component with value 0.
@@ -59,154 +65,113 @@ public struct CXDateComponentYear: CXDateComponent {
 
     // MARK: - Public methods
 
-    /// Creates an array of year components for the specified range.
-    /// - Parameter years: The range of years to create components for.
-    /// - Returns: An array of year components for the specified range.
-    public static func makeYears(_ years: Range<Int>) -> [CXDateComponentYear] {
-        years.map { .init($0) }
+    public func date(calendar: Calendar = .current) -> Date? {
+        calendar.date(from: DateComponents(year: value))
     }
 }
 
 /// A struct representing a month component in a date.
 public struct CXDateComponentMonth: CXDateComponent {
-    // MARK: - Enums
 
-    public enum MonthStyle {
-        case short, long
-    }
+    // MARK: - Public properties
+
+    public let year: CXDateComponentYear
 
     /// The numeric value of the month (1-12).
     public let value: Int
 
     /// The unique identifier of the year component.
-    public var id: Int { value }
+    public var id: String { year.id + "-" + description }
 
     /// Returns `true` if the month value is between 1 and 12 inclusive.
-    public var isValid: Bool { (1 ... 12).contains(value) }
+    public var isValid: Bool { year.isValid && (1 ... 12).contains(value) }
 
     /// A string representation of the month value.
-    public var description: String { monthSymbol }
+    public var description: String { value.description }
 
-    // MARK: - Private properties
+    public init(year: Int, month: Int) {
+        self.value = month
+        self.year = CXDateComponentYear(year)
+    }
 
-    private let monthSymbol: String
-
-    /// Creates a month component with the specified value.
-    /// - Parameter value: The numeric value of the month (1-12).
-    public init(_ value: Int, calendar: Calendar = .current, monthStyle: MonthStyle = .short) {
-        self.value = value
-        monthSymbol = CXDateComponentMonth.fetchMonthSymbol(value, calendar: calendar, monthStyle: monthStyle)
+    public init(_ value: Date, calendar: Calendar = .current) {
+        self.year = CXDateComponentYear(value, calendar: calendar)
+        self.value = calendar.component(.month, from: value)
     }
 
     /// An empty month component with value 0.
-    public static let empty = CXDateComponentMonth(0)
+    public static let empty = CXDateComponentMonth(year: 0, month: 0)
 
     // MARK: - Comparable
 
     public static func < (lhs: CXDateComponentMonth, rhs: CXDateComponentMonth) -> Bool {
-        lhs.value < rhs.value
+        if lhs.year != rhs.year {
+            return lhs.year < rhs.year
+        }
+        return lhs.value < rhs.value
     }
 
     // MARK: - Equatable
 
     public static func == (lhs: CXDateComponentMonth, rhs: CXDateComponentMonth) -> Bool {
-        lhs.value == rhs.value
+        lhs.value == rhs.value && lhs.year == rhs.year
     }
 
     // MARK: - Public methods
 
-    public static func makeMonths(calendar: Calendar = .current, monthStyle: MonthStyle = .short) -> [CXDateComponentMonth] {
-        calendar.monthSymbols.indices.map { .init($0 + 1, calendar: calendar, monthStyle: monthStyle) }
-    }
-
-    // MARK: - Private methods
-
-    private static func fetchMonthSymbol(_ value: Int, calendar: Calendar = .current, monthStyle: MonthStyle = .short) -> String {
-        let monthSymbols = monthStyle == .short ? calendar.shortMonthSymbols : calendar.monthSymbols
-        return monthSymbols[safe: value - 1] ?? ""
+    public func date(calendar: Calendar = .current) -> Date? {
+        calendar.date(from: DateComponents(year: year.value, month: value))
     }
 }
 
 /// A struct representing a day component in a date.
 public struct CXDateComponentDay: CXDateComponent {
+    public let month: CXDateComponentMonth
+
     /// The numeric value of the day.
     public let value: Int
 
     /// The unique identifier of the year component.
-    public var id: Int { value }
+    public var id: String { month.id + "-" + description }
 
     /// Returns `true` if the day value is between 1 and 31 inclusive.
     /// Note: This is a basic validation and doesn't account for varying month lengths.
-    public var isValid: Bool { (1 ... 31).contains(value) }
+    public var isValid: Bool { month.isValid && (1 ... 31).contains(value) }
 
     /// A string representation of the day value.
-    public var description: String { String(value) }
+    public var description: String { value.description }
 
-    /// Creates a day component with the specified value.
-    /// - Parameter value: The numeric value of the day.
-    public init(_ value: Int) {
-        self.value = value
+    public init(month: CXDateComponentMonth, day: Int) {
+        self.month = month
+        value = day
+    }
+
+    public init(_ value: Date, calendar: Calendar = .current) {
+        month = CXDateComponentMonth(value, calendar: calendar)
+        self.value = calendar.component(.day, from: value)
     }
 
     /// An empty day component with value 0.
-    public static let empty = CXDateComponentDay(0)
+    public static let empty = CXDateComponentDay(month: .empty, day: 0)
 
     // MARK: - Comparable
 
     public static func < (lhs: CXDateComponentDay, rhs: CXDateComponentDay) -> Bool {
-        lhs.value < rhs.value
+        if lhs.month != rhs.month {
+            return lhs.month < rhs.month
+        }
+        return lhs.value < rhs.value
     }
 
     // MARK: - Equatable
 
     public static func == (lhs: CXDateComponentDay, rhs: CXDateComponentDay) -> Bool {
-        lhs.value == rhs.value
+        lhs.value == rhs.value && lhs.month == rhs.month
     }
 
     // MARK: - Public methods
 
-    /// Creates an array of day components for the specified range.
-    /// - Parameter days: The range of days to create components for.
-    /// - Returns: An array of day components for the specified range.
-    public static func makeDays(calendar: Calendar = Calendar.current, date: Date) -> [CXDateComponentDay] {
-        guard let range = calendar.range(of: .day, in: .month, for: date) else {
-            return []
-        }
-        return range.map { .init($0) }
-    }
-
-    /// Creates an array of day components for the specified month and year.
-    /// - Parameters:
-    ///  - calendar: The calendar to use for date calculations.
-    ///  - date: The date to create day components for.
-    ///  - Returns: num of empty days at start of month
-    public static func makeEmptyDaysAtStart(calendar: Calendar = Calendar.current, date: Date) -> Int {
-        let components = calendar.dateComponents([.year, .month], from: date)
-        guard let firstDayOfMonth = calendar.date(from: components) else {
-            return 0
-        }
-        return calendar.component(.weekday, from: firstDayOfMonth) - 1
+    public func date(calendar: Calendar = .current) -> Date? {
+        calendar.date(from: DateComponents(year: month.year.value, month: month.value, day: value))
     }
 }
-
-// MARK: - Extensions
-
-public extension CXDateComponent where Self == CXDateComponentYear {
-    static func year(_ value: Int) -> CXDateComponentYear {
-        CXDateComponentYear(value)
-    }
-}
-
-public extension CXDateComponent where Self == CXDateComponentMonth {
-    static func month(_ value: Int, calendar _: Calendar = .current, formatter _: DateFormatter? = nil) -> CXDateComponentMonth {
-        CXDateComponentMonth(value)
-    }
-}
-
-public extension CXDateComponent where Self == CXDateComponentDay {
-    static func day(_ value: Int) -> CXDateComponentDay {
-        CXDateComponentDay(value)
-    }
-}
-
-/// Creates a date component with the specified value.

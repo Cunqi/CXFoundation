@@ -23,71 +23,34 @@ struct CXDateTests {
 
     @Test func testUpdateYear() async throws {
         var date = CXDate()
-        date.year = .year(2023)
+        date.year = .init(2023)
         #expect(date.year.value == 2023)
         #expect(date.isValid)
+        #expect(date.description == "2023")
     }
 
     @Test func testUpdateMonth() async throws {
         var date = CXDate()
-        date.month = .month(1)
+        date.month = .init(year: 2023, month: 1)
+        #expect(date.year.value == 2023)
         #expect(date.month.value == 1)
-        #expect(date.isValid == false)
+        #expect(date.isValid)
+        #expect(date.description == "2023-1")
     }
 
     @Test func testUpdateDay() async throws {
         var date = CXDate()
-        date.day = .day(1)
-        #expect(date.day.value == 1)
-        #expect(date.isValid == false)
-    }
-
-    @Test func testYearMonth() async throws {
-        var date = CXDate()
-        date.year = .year(2023)
-        date.month = .month(1)
-        #expect(date.year.value == 2023)
-        #expect(date.month.value == 1)
-        #expect(date.isValid)
-    }
-
-    @Test func testYearMonthDay() async throws {
-        var date = CXDate()
-        date.year = .year(2023)
-        date.month = .month(1)
-        date.day = .day(1)
+        date.day = .init(month: .init(year: 2023, month: 1), day: 1)
         #expect(date.year.value == 2023)
         #expect(date.month.value == 1)
         #expect(date.day.value == 1)
         #expect(date.isValid)
-    }
-
-    @Test func testYearOnlyDescription() async throws {
-        var date = CXDate()
-        date.year = .year(2023)
-        #expect(date.description == "2023")
-    }
-
-    @Test func testYearMonthOnlyDescription() async throws {
-        var date = CXDate()
-        date.year = .year(2023)
-        date.month = .month(1)
-        #expect(date.description == "2023-Jan")
-    }
-
-    @Test func testYearMonthDayDescription() async throws {
-        var date = CXDate()
-        date.year = .year(2023)
-        date.month = .month(1)
-        date.day = .day(1)
-        #expect(date.description == "2023-Jan-1")
+        #expect(date.description == "2023-1-1")
     }
 
     @Test func testFormattedValue() async throws {
         var date = CXDate()
-        date.year = .year(2023)
-        date.month = .month(1)
-        date.day = .day(1)
+        date.day = .init(month: .init(year: 2023, month: 1), day: 1)
         #expect(date.formattedValue == "2023-01-01")
     }
 }
