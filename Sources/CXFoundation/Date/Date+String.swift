@@ -31,6 +31,10 @@ extension Date {
     public var fullDate: String {
         DateFormatter.fullDate.string(from: self)
     }
+
+    public var monthDay: String {
+        DateFormatter.monthDay.string(from: self)
+    }
 }
 
 extension DateFormatter {
@@ -67,6 +71,12 @@ extension DateFormatter {
     static var day: DateFormatter {
         let formatter = DateFormatter()
         formatter.dateFormat = "d"
+        return formatter
+    }
+
+    static var monthDay: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM d"
         return formatter
     }
 }
