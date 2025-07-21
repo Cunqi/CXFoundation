@@ -7,24 +7,24 @@
 
 import Foundation
 
-public extension Date {
-    var abbreviatedMonth: String {
+extension Date {
+    public var abbreviatedMonth: String {
         DateFormatter.abbreviatedMonth.string(from: self)
     }
 
-    var dayOfWeekWithMonthAndDay: String {
+    public var dayOfWeekWithMonthAndDay: String {
         DateFormatter.dayOfWeekWithMonthAndDay.string(from: self)
     }
 
-    var fullMonth: String {
+    public var fullMonth: String {
         DateFormatter.fullMonth.string(from: self)
     }
 
-    var year: String {
+    public var year: String {
         DateFormatter.year.string(from: self)
     }
 
-    var day: String {
+    public var day: String {
         DateFormatter.day.string(from: self)
     }
 }
@@ -60,4 +60,3 @@ extension DateFormatter {
         return formatter
     }
 }
-

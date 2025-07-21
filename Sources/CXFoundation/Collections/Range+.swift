@@ -9,6 +9,6 @@ import Foundation
 
 extension Swift.ClosedRange where Bound: Comparable {
     public func clamped(with item: Bound) -> Bound {
-        return min(max(lowerBound, item), upperBound)
+        min(max(lowerBound, item), upperBound)
     }
 }
