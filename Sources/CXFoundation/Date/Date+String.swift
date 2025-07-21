@@ -27,6 +27,10 @@ extension Date {
     public var day: String {
         DateFormatter.day.string(from: self)
     }
+
+    public var fullDate: String {
+        DateFormatter.fullDate.string(from: self)
+    }
 }
 
 extension DateFormatter {
@@ -45,6 +49,12 @@ extension DateFormatter {
     static var fullMonth: DateFormatter {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM"
+        return formatter
+    }
+
+    static var fullDate: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM d, yyyy"
         return formatter
     }
 
