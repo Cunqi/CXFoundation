@@ -1,5 +1,5 @@
 //
-//  Array+.swift
+//  Set+.swift
 //  CXFoundation
 //
 //  Created by Cunqi Xiao on 9/10/25.
@@ -7,14 +7,12 @@
 
 import Foundation
 
-extension Array {
+extension Set {
     public var isNotEmpty: Bool {
         !isEmpty
     }
-}
 
-extension Array where Element: Hashable {
-    public func toSet() -> Set<Element> {
-        Set(self)
+    public func toArray() -> [Element] {
+        Array(self)
     }
 }
