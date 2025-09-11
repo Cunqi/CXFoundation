@@ -8,7 +8,7 @@
 import Foundation
 
 extension Set {
-    public var isNotEmpty: Bool {
+    @inlinable public var isNotEmpty: Bool {
         !isEmpty
     }
 
