@@ -11,7 +11,17 @@ import Foundation
 
 /// A struct representing a date with a unique identifier. by integrating the `Identifiable` protocol, it allows for easy identification, this will be useful in SwiftUI or other contexts where unique identification of objects is required.
 public struct IdentifiableDate: Identifiable {
-    // MARK: Lifecycle
+    // MARK: - Properties
+
+    // MARK: Public
+
+    /// The underlying date value.
+    public let value: Date
+
+    /// A unique identifier for the date.
+    public let id: String
+
+    // MARK: - Lifecycle
 
     // MARK: - Initializers
 
@@ -23,14 +33,6 @@ public struct IdentifiableDate: Identifiable {
         self.value = value
         self.id = id
     }
-
-    // MARK: Public
-
-    /// The underlying date value.
-    public let value: Date
-
-    /// A unique identifier for the date.
-    public let id: String
 }
 
 // MARK: - Date Extensions

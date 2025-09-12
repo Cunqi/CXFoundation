@@ -8,9 +8,14 @@
 import Foundation
 
 extension Set {
-    @inlinable public var isNotEmpty: Bool {
+    // MARK: - Computed Properties
+
+    @inlinable
+    public var isNotEmpty: Bool {
         !isEmpty
     }
+
+    // MARK: - Functions
 
     public func toArray() -> [Element] {
         Array(self)

@@ -1,13 +1,13 @@
 //
-//  String+.swift
+//  File.swift
 //  CXFoundation
 //
-//  Created by Cunqi Xiao on 9/10/25.
+//  Created by Cunqi Xiao on 9/11/25.
 //
 
 import Foundation
 
-extension String {
+extension IndexSet {
     @inlinable
     public var isNotEmpty: Bool {
         !isEmpty
